@@ -22,19 +22,20 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.util.FileUtils;
 
-// Note: javadoc in class and fields descriptions must be XHTML.
 /**
- * Copies <code>.jar</code> files in a single directory. Dependencies are copied as well, except if
+ * Copies {@code .jar} files in a single directory. Dependencies are copied as well, except if
  * already presents.
  *
- * @goal collect
- * @phase package
  * @version $Id$
  * @author Martin Desruisseaux
  */
+@Mojo(name = "collect", defaultPhase = LifecyclePhase.PACKAGE)
 public class JarCollector extends AbstractMojo {
     /** The sub directory to create inside the "target" directory. */
     private static final String SUB_DIRECTORY = "binaries";
@@ -45,28 +46,16 @@ public class JarCollector extends AbstractMojo {
      */
     private String collectDirectory;
 
-    /**
-     * Directory containing the generated JAR.
-     *
-     * @parameter property="project.build.directory"
-     * @required
-     */
+    /** Directory containing the generated JAR. */
+    @Parameter(defaultValue = "${project.build.directory}", required = true)
     private String outputDirectory;
 
-    /**
-     * Name of the generated JAR.
-     *
-     * @parameter property="project.build.finalName"
-     * @required
-     */
+    /** Name of the generated JAR. */
+    @Parameter(defaultValue = "${project.build.finalName}", required = true)
     private String jarName;
 
-    /**
-     * The Maven project running this plugin.
-     *
-     * @parameter property="project"
-     * @required
-     */
+    /** The Maven project running this plugin. */
+    @Parameter(defaultValue = "${project}", required = true)
     private MavenProject project;
 
     /**
