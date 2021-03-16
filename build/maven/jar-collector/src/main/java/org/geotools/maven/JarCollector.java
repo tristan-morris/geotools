@@ -55,7 +55,7 @@ public class JarCollector extends AbstractMojo {
     private String jarName;
 
     /** The Maven project running this plugin. */
-    @Parameter(defaultValue = "${project}", required = true)
+    @Parameter(defaultValue = "${project}", required = true, readonly = true)
     private MavenProject project;
 
     /**
@@ -84,7 +84,6 @@ public class JarCollector extends AbstractMojo {
     }
 
     /** Implementation of the {@link #execute} method. */
-    @SuppressWarnings("PMD.SystemPrintln")
     private void collect() throws MojoExecutionException, IOException {
         /*
          * Make sure that we are collecting the JAR file from a module which produced
@@ -127,7 +126,7 @@ public class JarCollector extends AbstractMojo {
         Set<Artifact> dependencies = project.getDependencyArtifacts();
         if (dependencies != null) {
             for (final Artifact artifact : dependencies) {
-                System.out.println("+++++++++++++++++++++++ DEP: " + artifact.getDependencyTrail());
+                getLog().info("+++++++++++++++++++++++ DEP: " + artifact.getDependencyTrail());
                 final String scope = artifact.getScope();
                 if (scope != null
                         && // Maven 2.0.6 bug?
@@ -139,9 +138,9 @@ public class JarCollector extends AbstractMojo {
                         if (copy.exists()) {
                             /*
                              * Copies the dependency only if it was not already copied. Note that
-                             * the module's JAR was copied inconditionnaly above (because it may
+                             * the module's JAR was copied unconditionally above (because it may
                              * be the result of a new compilation). If a Geotools JAR from the
-                             * dependencies list changed, it will be copied inconditionnaly when
+                             * dependencies list changed, it will be copied unconditionally when
                              * the module for this JAR will be processed by Maven.
                              */
                             continue;
