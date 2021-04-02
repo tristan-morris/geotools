@@ -43,6 +43,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -116,8 +117,38 @@ public class MongoUtil {
         }
     }
 
+    private static Set<String> addStaticIndexedGeometries(DBCollection dbc) {
+
+        // This will statically return the geometry fields (used for views)
+        Set<String> geometryIndices = new HashSet<String>();
+        Map<String, Class<?>> fieldMap = findMappableFields(dbc);
+        for (Map.Entry<String, Class<?>> entry : fieldMap.entrySet()) {
+            
+            if (entry.getKey().equals("geometry.type")) {
+                geometryIndices.add("geometry");
+            }
+
+        }
+        return geometryIndices;
+    }
+
     public static Set<String> findIndexedGeometries(DBCollection dbc) {
-        return findIndexedFields(dbc, "2dsphere");
+        try {
+            // This won't succeed if querying against a 'view' 
+            return findIndexedFields(dbc, "2dsphere");
+        }
+        // Handle collection being a view, manually
+        // com.mongodb.MongoCommandException: Command failed with error 166 (CommandNotSupportedOnView): 
+        // 'Namespace blah is a view, not a collection' on server host:27017. The full response is {"ok": 0.0, "errmsg": "Namespace blah is a view, not a collection", "code": 166, "codeName": "CommandNotSupportedOnView"}
+        catch (com.mongodb.MongoCommandException mce) {
+
+            // Semi handle CommandNotSupportedOnView
+            if (mce.getErrorCode​() == 166){
+                return addStaticIndexedGeometries(dbc);
+            }
+
+            throw mce;            
+        }
     }
 
     public static Set<String> findIndexedFields(DBCollection dbc) {
