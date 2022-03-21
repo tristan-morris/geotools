@@ -850,9 +850,7 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
     }
 
     private Map<Name, Expression> cleanFromAnonymousAttribute(Map<Name, Expression> clientProps) {
-        return clientProps
-                .entrySet()
-                .stream()
+        return clientProps.entrySet().stream()
                 .filter(e -> !(e.getKey() instanceof ComplexNameImpl))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
@@ -870,9 +868,7 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
                 xpathAttributeBuilder.set(target, xpath, null, null, targetNodeType, false, null);
         // add a metadata for unbounded sequences
         final boolean allComplexNames =
-                clientPropsMappings
-                        .entrySet()
-                        .stream()
+                clientPropsMappings.entrySet().stream()
                         .allMatch(e -> e.getKey() instanceof ComplexNameImpl);
         if (!multiValues.isEmpty() && !clientPropsMappings.isEmpty() && allComplexNames) {
             parentAttribute.getUserData().put(MULTI_VALUE_TYPE, UNBOUNDED_MULTI_VALUE);
@@ -921,8 +917,7 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
                 || !collection.stream().allMatch(o -> o instanceof MultiValueContainer))
             return false;
         final List<Entry<Name, Expression>> expressionEntryList =
-                collection
-                        .stream()
+                collection.stream()
                         .map(o -> (MultiValueContainer) o)
                         .flatMap(
                                 m -> {
@@ -1579,10 +1574,6 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
 
             Collection collection = (Collection) property.getValue();
 
-            if (this.getClientProperties(property).containsKey(XLINK_HREF_NAME)) {
-                return true;
-            }
-
             List<Property> values = new ArrayList<>();
             for (Object o : collection) {
                 if (o instanceof Property) {
@@ -1602,6 +1593,9 @@ public class DataAccessMappingFeatureIterator extends AbstractMappingFeatureIter
                 }
             }
             property.setValue(values);
+            if (this.getClientProperties(property).containsKey(XLINK_HREF_NAME)) {
+                return true;
+            }
         } else if (property.getName().equals(ComplexFeatureConstants.FEATURE_CHAINING_LINK_NAME)) {
             // ignore fake attribute FEATURE_LINK
             result = false;

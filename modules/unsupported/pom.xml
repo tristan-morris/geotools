@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- ======================================================================= 
 	Maven Project Configuration File The Geotools Project http://www.geotools.org/ 
 	Version: $Id$ ======================================================================= -->
@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.geotools</groupId>
     <artifactId>modules</artifactId>
-    <version>26-SNAPSHOT</version>
+    <version>27-SNAPSHOT</version>
   </parent>
   <!-- =========================================================== -->
   <!-- Module Description -->
@@ -16,9 +16,7 @@
   <artifactId>unsupported</artifactId>
   <packaging>pom</packaging>
   <name>Geotools unsupported</name>
-  <description>
-  Unsupported modules for GeoTools.
-</description>
+  <description>Unsupported modules for GeoTools.</description>
   <licenses>
     <license>
       <name>Lesser General Public License (LGPL)</name>
@@ -26,6 +24,29 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+  <!-- Modules included in a normal build -->
+  <modules>
+    <module>vpf</module>
+    <module>swing</module>
+    <module>process</module>
+    <module>process-geometry</module>
+    <module>process-raster</module>
+    <module>process-feature</module>
+    <module>geojson-core</module>
+    <module>geojson-store</module>
+    <module>geojson</module>
+    <module>mbtiles</module>
+    <module>gml-geometry-streaming</module>
+    <module>wfs-ng</module>
+    <module>ogr</module>
+    <module>postgis-raster</module>
+    <module>ogcapi-client</module>
+    <module>tpk</module>
+    <module>cql-json</module>
+    <module>vsi</module>
+    <module>cql2</module>
+    <module>jdbc-teradata</module>
+  </modules>
   <profiles>
     <!-- ================================================== -->
     <!-- Unsupported Modules -->
@@ -45,17 +66,6 @@
       </activation>
       <modules>
         <module>vpf</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>gtopo30</id>
-      <activation>
-        <property>
-          <name>all</name>
-        </property>
-      </activation>
-      <modules>
-        <module>gtopo30</module>
       </modules>
     </profile>
     <profile>
@@ -158,8 +168,8 @@
         </property>
       </activation>
       <modules>
-        <module>geojsonstore</module>
-        <module>geojson</module>
+        <module>geojson-core</module>
+        <module>geojson-store</module>
       </modules>
     </profile>
     <profile>
@@ -188,14 +198,15 @@
         </property>
       </activation>
       <modules>
-        <module>jdbc-ng</module>
         <module>solr</module>
         <module>elasticsearch</module>
         <module>css</module>
-        <module>geojsonstore</module>
+        <module>geojson-core</module>
+        <module>geojson-store</module>
         <module>s3-geotiff</module>
-        <module>gtopo30</module>
         <module>vpf</module>
+        <module>vsi</module>
+        <module>jdbc-teradata</module>
       </modules>
     </profile>
     <profile>
@@ -204,25 +215,17 @@
         <module>arcgis-rest</module>
       </modules>
     </profile>
+    <profile>
+      <id>vsi</id>
+      <modules>
+        <module>vsi</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>teradata</id>
+      <modules>
+        <module>jdbc-teradata</module>
+      </modules>
+    </profile>
   </profiles>
-  <!-- Modules included in a normal build -->
-  <modules>
-    <module>vpf</module>
-    <module>swing</module>
-    <module>process</module>
-    <module>process-geometry</module>
-    <module>process-raster</module>
-    <module>process-feature</module>
-    <module>geojsonstore</module>
-    <module>geojson</module>
-    <module>mbtiles</module>
-    <module>wfs-ng</module>
-    <module>ogr</module>
-    <module>postgis-raster</module>
-    <module>ogcapi-client</module>
-    <module>tpk</module>
-    <module>imagemosaic-jdbc</module>
-      <module>cql-json</module>
-  </modules>
 </project>
-

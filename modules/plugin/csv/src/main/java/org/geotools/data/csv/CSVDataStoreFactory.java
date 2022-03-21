@@ -204,6 +204,7 @@ public class CSVDataStoreFactory implements FileDataStoreFactorySpi {
     }
 
     @Override
+    @SuppressWarnings("ReturnValueIgnored")
     public boolean isAvailable() {
         try {
             CSVDataStore.class.getName();
@@ -246,6 +247,11 @@ public class CSVDataStoreFactory implements FileDataStoreFactorySpi {
             throw new IllegalArgumentException(
                     "Could not find file from params to create csv data store");
         }
+        String path = file.getPath();
+        if (path.startsWith("file:")) {
+            file = new File(path.replace("file:", ""));
+        }
+
         URI namespace = (URI) NAMESPACEP.lookUp(params);
         return createDataStoreFromFile(file, namespace, params);
     }
@@ -293,7 +299,9 @@ public class CSVDataStoreFactory implements FileDataStoreFactorySpi {
         if (quotes != null && quotes.booleanValue()) {
             csvStrategy.setQuoteAllFields(quotes.booleanValue());
         }
+
         Character quoteChar = (Character) QUOTECHAR.lookUp(params);
+
         if (quoteChar != null) {
             csvStrategy.setQuotechar(quoteChar.charValue());
         }
