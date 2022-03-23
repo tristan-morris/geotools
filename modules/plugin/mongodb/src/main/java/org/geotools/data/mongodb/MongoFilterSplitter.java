@@ -58,7 +58,13 @@ public class MongoFilterSplitter extends PostPreProcessFilterSplittingVisitor {
                         || expression2 instanceof JsonSelectAllFunction)
                 && expression1 instanceof Literal) {
             preStack.push(filter);
-        } else {
+        }
+        //  else if ((expression2 instanceof BfGeometryTypeFunction
+        //                 || expression2 instanceof BfGeometryTypeFunction)
+        //         && expression1 instanceof Literal) {
+        //     preStack.push(filter);
+        // }
+        else {
             postStack.push(filter);
         }
     }

@@ -41,6 +41,7 @@ import org.bson.BsonString;
 import org.bson.Document;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
+import org.geotools.data.mongodb.complex.BfGeometryTypeFunction;
 import org.geotools.data.mongodb.complex.JsonSelectAllFunction;
 import org.geotools.data.mongodb.complex.JsonSelectFunction;
 import org.geotools.data.mongodb.data.SchemaStoreDirectoryProvider;
@@ -306,19 +307,21 @@ public class MongoDataStore extends ContentDataStore {
         capabilities.addType(Id.class);
         capabilities.addType(JsonSelectFunction.class);
         capabilities.addType(JsonSelectAllFunction.class);
+        capabilities.addType(BfGeometryTypeFunction.class);
 
         /*
-        capabilities.addType(IncludeFilter.class);
-        capabilities.addType(ExcludeFilter.class);
-
-        //temporal filters
-        capabilities.addType(After.class);
-        capabilities.addType(Before.class);
-        capabilities.addType(Begins.class);
-        capabilities.addType(BegunBy.class);
-        capabilities.addType(During.class);
-        capabilities.addType(Ends.class);
-        capabilities.addType(EndedBy.class);*/
+         * capabilities.addType(IncludeFilter.class);
+         * capabilities.addType(ExcludeFilter.class);
+         *
+         * //temporal filters
+         * capabilities.addType(After.class);
+         * capabilities.addType(Before.class);
+         * capabilities.addType(Begins.class);
+         * capabilities.addType(BegunBy.class);
+         * capabilities.addType(During.class);
+         * capabilities.addType(Ends.class);
+         * capabilities.addType(EndedBy.class);
+         */
 
         return capabilities;
     }
@@ -359,7 +362,8 @@ public class MongoDataStore extends ContentDataStore {
         // pre-populating this makes view creation easier...
         incoming.getUserData().put(KEY_collection, incoming.getTypeName());
 
-        // Collection needs to exist (with index) so that it's returned with createTypeNames()
+        // Collection needs to exist (with index) so that it's returned with
+        // createTypeNames()
         dataStoreDB
                 .createCollection(incoming.getTypeName(), new BasicDBObject())
                 .createIndex(new BasicDBObject(geometryMapping, "2dsphere"));

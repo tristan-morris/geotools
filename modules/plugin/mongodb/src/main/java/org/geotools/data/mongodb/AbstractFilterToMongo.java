@@ -28,12 +28,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.bson.types.ObjectId;
+import org.geotools.data.mongodb.complex.BfGeometryTypeFunction;
 import org.geotools.data.mongodb.complex.JsonSelectAllFunction;
 import org.geotools.data.mongodb.complex.JsonSelectFunction;
 import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.util.Converters;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.filter.And;
@@ -101,6 +104,8 @@ import org.opengis.filter.temporal.TOverlaps;
  * @see The GNU Lesser General Public License (LGPL)
  */
 public abstract class AbstractFilterToMongo implements FilterVisitor, ExpressionVisitor {
+
+    private static final Logger LOGGER = Logging.getLogger(AbstractFilterToMongo.class);
 
     protected final MongoGeometryBuilder geometryBuilder;
 
@@ -285,6 +290,7 @@ public abstract class AbstractFilterToMongo implements FilterVisitor, Expression
 
         Object leftValue = filter.getExpression1().accept(this, leftValueType);
         Object rightValue = filter.getExpression2().accept(this, rightValueType);
+
         if (rightValue instanceof String && !(leftValue instanceof String)) {
             // reverse
             Object tmp = leftValue;
@@ -292,7 +298,26 @@ public abstract class AbstractFilterToMongo implements FilterVisitor, Expression
             rightValue = tmp;
         }
 
-        output.put((String) leftValue, op == null ? rightValue : new BasicDBObject(op, rightValue));
+        // LOGGER.warning(
+        //         "BfGeometryTypeFunction encodeBinaryComparisonOp left" + leftValueType +
+        // leftValue);
+        // LOGGER.warning("BfGeometryTypeFunction encodeBinaryComparisonOp op" + op);
+        // LOGGER.warning(
+        //         "BfGeometryTypeFunction encodeBinaryComparisonOp right"
+        //                 + rightValueType
+        //                 + rightValue);
+
+        if (rightValue.toString().contains("elemMatch")) {
+            LOGGER.info("override encodeBinaryComparisonOp elemMatch");
+            output = new BasicDBObject((String) leftValue, rightValue);
+        } else {
+            output.put(
+                    (String) leftValue,
+                    op == null ? rightValue : new BasicDBObject(op, rightValue));
+        }
+
+        // LOGGER.warning("BfGeometryTypeFunction encodeBinaryComparisonOp output" + output);
+
         return output;
     }
 
@@ -425,7 +450,8 @@ public abstract class AbstractFilterToMongo implements FilterVisitor, Expression
 
         Envelope envelope = filter.getExpression2().evaluate(null, Envelope.class);
 
-        // Mongodb cannot deal with filters using geometries that span beyond the whole world
+        // Mongodb cannot deal with filters using geometries that span beyond the whole
+        // world
         if (!WORLD.contains(envelope)) {
             envelope = envelope.intersection(WORLD);
         }
@@ -556,6 +582,9 @@ public abstract class AbstractFilterToMongo implements FilterVisitor, Expression
         }
         if (function instanceof JsonSelectAllFunction) {
             return ((JsonSelectAllFunction) function).getJsonPath();
+        }
+        if (function instanceof BfGeometryTypeFunction) {
+            return ((BfGeometryTypeFunction) function).getMongoFilter(extraData);
         }
         throw new UnsupportedOperationException();
     }

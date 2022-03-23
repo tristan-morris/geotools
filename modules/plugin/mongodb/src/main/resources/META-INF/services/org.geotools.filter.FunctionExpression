@@ -3,3 +3,4 @@ org.geotools.data.mongodb.complex.CollectionIdFunction
 org.geotools.data.mongodb.complex.CollectionLinkFunction
 org.geotools.data.mongodb.complex.NestedCollectionLinkFunction
 org.geotools.data.mongodb.complex.JsonSelectAllFunction
+org.geotools.data.mongodb.complex.BfGeometryTypeFunction
