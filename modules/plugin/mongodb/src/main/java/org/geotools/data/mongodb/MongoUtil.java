@@ -123,31 +123,33 @@ public class MongoUtil {
         Set<String> geometryIndices = new HashSet<String>();
         Map<String, Class<?>> fieldMap = findMappableFields(dbc);
         for (Map.Entry<String, Class<?>> entry : fieldMap.entrySet()) {
-            
+
             if (entry.getKey().equals("geometry.type")) {
                 geometryIndices.add("geometry");
             }
-
         }
         return geometryIndices;
     }
 
     public static Set<String> findIndexedGeometries(DBCollection dbc) {
         try {
-            // This won't succeed if querying against a 'view' 
+            // This won't succeed if querying against a 'view'
             return findIndexedFields(dbc, "2dsphere");
         }
         // Handle collection being a view, manually
-        // com.mongodb.MongoCommandException: Command failed with error 166 (CommandNotSupportedOnView): 
-        // 'Namespace blah is a view, not a collection' on server host:27017. The full response is {"ok": 0.0, "errmsg": "Namespace blah is a view, not a collection", "code": 166, "codeName": "CommandNotSupportedOnView"}
+        // com.mongodb.MongoCommandException: Command failed with error 166
+        // (CommandNotSupportedOnView):
+        // 'Namespace blah is a view, not a collection' on server host:27017. The full
+        // response is {"ok": 0.0, "errmsg": "Namespace blah is a view, not a
+        // collection", "code": 166, "codeName": "CommandNotSupportedOnView"}
         catch (com.mongodb.MongoCommandException mce) {
 
             // Semi handle CommandNotSupportedOnView
-            if (mce.getErrorCode​() == 166){
+            if (mce.getErrorCode() == 166) {
                 return addStaticIndexedGeometries(dbc);
             }
 
-            throw mce;            
+            throw mce;
         }
     }
 
@@ -208,7 +210,7 @@ public class MongoUtil {
                         }
                     }
                 } else if (!(v instanceof List)) {
-                    // this is here as documentation/placeholder.  no array/list support yet.
+                    // this is here as documentation/placeholder. no array/list support yet.
                     Class<?> binding = mapBSONObjectToJavaType(v);
                     if (binding != null) {
                         map.put(field, binding);
@@ -262,7 +264,7 @@ public class MongoUtil {
         }
         if (file.isDirectory()) {
             // File.canWrite() doesn't report as intended for directories on
-            // certain platforms with certain permissions scenarios.  Will
+            // certain platforms with certain permissions scenarios. Will
             // instead we verify we can create a file then delete it.
             if (!File.createTempFile("test", ".tmp", file).delete()) {
                 throw new IOException(
